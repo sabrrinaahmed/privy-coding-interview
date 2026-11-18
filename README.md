@@ -18,9 +18,17 @@ curl -X POST localhost:7070/items -H "Content-Type: application/json" -d '{"name
 curl localhost:7070/items/1
 ```
 
+## Codespaces
+
+Code → Codespaces → Create codespace on main. The `.devcontainer` config installs Java 21, Maven, the Java extensions, and Copilot, then downloads dependencies and runs the tests automatically (the first build takes a few minutes).
+
+- Create the codespace the night before, so tomorrow it only has to restart.
+- Codespaces stop after 30 idle minutes by default. Raise the idle timeout at github.com/settings/codespaces.
+- Keep a phone hotspot ready, and a local clone as a backup if Wi-Fi is slow.
+
 ## Night before
 
-- [ ] Clone this repo with VS Code (Cmd+Shift+P → Git: Clone → Clone from GitHub)
+- [ ] Create the codespace (or clone locally with VS Code: Cmd+Shift+P → Git: Clone → Clone from GitHub)
 - [ ] `mvn -q test` and `mvn -o -q test` both pass
 - [ ] Open the folder in VS Code and let the Java extension finish indexing
 - [ ] Copilot Chat answers a test question; pick your model
