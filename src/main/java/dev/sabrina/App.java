@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * REST API for Met collection search.
  *
- * Run:   mvn -q compile exec:java
+ * Run:   mvn compile exec:java
  * Test:  mvn -q test
  * Try:   curl 'localhost:7070/search?q=bread'
  */
@@ -52,7 +52,7 @@ public class App {
             }
 
             try {
-                ctx.json(new SearchResponse(recentObjectSearcher.searchRecentObjects(query.trim())));
+                ctx.status(200).json(new SearchResponse(recentObjectSearcher.searchRecentObjects(query.trim())));
             } catch (IOException e) {
                 logger.error("MET search request failed", e);
                 ctx.status(HttpStatus.BAD_GATEWAY).json(new ErrorResponse("MET search request failed"));
