@@ -2,6 +2,46 @@
 
 Used for coding interview during onsite. A ready-to-go Java (Javalin) starter for the coding project.
 
+Privy Onsite: The Met API
+
+Timeline
+12:30 - Segment 1 (Solo): Build a working application meeting the Functional Requirements. You may use AI tools freely.
+1:45 - Segment 2 (Paired): An interviewer joins you. Together, you'll review your code and work on meeting new, non-Functional requirements. We want to see how you think through challenges collaboratively.
+2:40 - Debrief: Walkthrough and discussion.
+
+
+Introduction
+We're going to the Met!
+
+We're excited about the trip and want to explore their archives for cool bread!
+
+Build a working application that uses the Met Museum search functionality (https://metmuseum.github.io/#endpoints) and returns the 5 most recent works related to a query term, as determined by objectEndDate.
+
+This should be an API server, and you can choose your own architecture. The default query should be bread, but support custom terms as time allows.
+
+
+Functional Requirements
+- Query the Met API for a search term.
+- Retrieve matching objects and relevant details.
+- Return/display up to 5 most recent works by objectEndDate (descending).
+
+Expectations
+Feel free to Google and ask questions. Don’t hesitate to pop out and visit us at our desk with questions.
+Start simple, then polish. We're looking for production-ready code you'd be proud to have your peer review.
+You may use AI tools, but be ready to explain your implementation and tradeoffs line-by-line.
+Use any language, framework, or runtime you prefer.
+
+If You Finish Functional Requirements Early
+You get to play the role of product manager or tech lead in deciding where to focus your remaining time. We’re excited to see whatever improvements you’d like to bring and encourage you to pick something in your wheelhouse to really show off. For example:
+- Resilience or latency improvements
+- Structured error responses and status codes
+- Pagination or query parameter design
+- Filtering or alternative sorting strategies
+
+Set Up and Delivery
+Use any environment/framework you prefer. Please set up your project scaffolding in advance. After the interview, send either a zip file by email, or share a GitHub repo by link.
+
+
 ## Run
 
 ```bash
