@@ -37,6 +37,7 @@ public class MetSearchService {
     private static final int RESULT_LIMIT = 5;
     private static final int DETAIL_WORKERS = 5;
     private static final long REQUEST_INTERVAL_NANOS = TimeUnit.MILLISECONDS.toNanos(2000);
+    private static final long WORKER_START_STAGGER_NANOS = TimeUnit.MILLISECONDS.toNanos(50);
 
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
@@ -238,7 +239,7 @@ public class MetSearchService {
             TimeUnit.NANOSECONDS.sleep(REQUEST_INTERVAL_NANOS);
         } else if (progress != null) {
             int workerStartSlot = progress.nextWorkerStartSlot().getAndIncrement();
-            TimeUnit.NANOSECONDS.sleep(workerStartSlot * REQUEST_INTERVAL_NANOS);
+            TimeUnit.NANOSECONDS.sleep(workerStartSlot * WORKER_START_STAGGER_NANOS);
         }
         workerHasMadeRequest.set(true);
     }

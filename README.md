@@ -60,8 +60,9 @@ curl -i 'localhost:7070/search'
 `GET /search?q=...` searches the Met Collection API, fetches details for each
 matching object, and returns up to five full records ordered by `objectEndDate`
 descending. Search pagination uses `limit=500`; detail requests are concurrent
-with five workers, each waiting 50 ms between requests. Each distinct object ID
-is fetched once. The Met API does not require an API key.
+with five workers, staggered by 50 ms at startup and waiting 2 seconds between
+requests per worker. Each distinct object ID is fetched once. The Met API does
+not require an API key.
 
 ## Codespaces
 
