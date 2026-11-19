@@ -45,18 +45,21 @@ Use any environment/framework you prefer. Please set up your project scaffolding
 ## Run
 
 ```bash
-mvn -q test              # 4 starter tests should pass
-mvn -o -q test           # same, offline: confirms dependencies are cached
-mvn -q compile exec:java # server on http://localhost:7070
+mvn -q test
+mvn -q -Dtest=MetSearchServiceTest test
+mvn -q compile exec:java
 ```
 
 Try it:
 
 ```bash
-curl localhost:7070/health
-curl -X POST localhost:7070/items -H "Content-Type: application/json" -d '{"name":"first"}'
-curl localhost:7070/items/1
+curl 'localhost:7070/search?q=bread'
+curl -i 'localhost:7070/search'
 ```
+
+`GET /search?q=...` searches the Met Collection API, fetches details for each
+matching object, and returns up to five full records ordered by `objectEndDate`
+descending. Search pagination uses `limit=500`. The Met API does not require an API key.
 
 ## Codespaces
 

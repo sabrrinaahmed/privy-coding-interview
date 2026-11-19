@@ -2,60 +2,65 @@ package dev.sabrina;
 
 import io.javalin.Javalin;
 import io.javalin.http.HttpStatus;
+import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.io.IOException;
+import java.util.List;
 
 /**
- * Minimal REST API starter.
+ * REST API for Met collection search.
  *
  * Run:   mvn -q compile exec:java
  * Test:  mvn -q test
- * Try:   curl localhost:7070/health
+ * Try:   curl 'localhost:7070/search?q=bread'
  */
 public class App {
+    private static final Logger logger = LoggerFactory.getLogger(App.class);
 
-    // Example in-memory store. Replace with whatever the onsite prompt needs.
-    record Item(long id, String name) {}
-    record CreateItemRequest(String name) {}
+    record SearchResponse(List<JsonNode> objects) {
+        SearchResponse {
+            objects = List.copyOf(objects);
+        }
+    }
     record ErrorResponse(String error) {}
 
-    private final Map<Long, Item> items = new ConcurrentHashMap<>();
-    private final AtomicLong nextId = new AtomicLong(1);
+    @FunctionalInterface
+    interface RecentObjectSearcher {
+        List<JsonNode> searchRecentObjects(String query) throws IOException, InterruptedException;
+    }
+
+    private final RecentObjectSearcher recentObjectSearcher;
+
+    public App() {
+        this(new MetSearchService()::searchRecentObjects);
+    }
+
+    App(RecentObjectSearcher recentObjectSearcher) {
+        this.recentObjectSearcher = recentObjectSearcher;
+    }
 
     public Javalin create() {
         Javalin app = Javalin.create();
 
-        app.get("/health", ctx -> ctx.json(Map.of("status", "ok")));
-
-        // Example: create an item
-        app.post("/items", ctx -> {
-            CreateItemRequest req = ctx.bodyAsClass(CreateItemRequest.class);
-            if (req.name() == null || req.name().isBlank()) {
-                ctx.status(HttpStatus.BAD_REQUEST).json(new ErrorResponse("name is required"));
+        app.get("/search", ctx -> {
+            String query = ctx.queryParam("q");
+            if (query == null || query.isBlank()) {
+                ctx.status(HttpStatus.BAD_REQUEST).json(new ErrorResponse("q is required"));
                 return;
             }
-            Item item = new Item(nextId.getAndIncrement(), req.name().trim());
-            items.put(item.id(), item);
-            ctx.status(HttpStatus.CREATED).json(item);
-        });
 
-        // Example: fetch an item by id
-        app.get("/items/{id}", ctx -> {
-            long id;
             try {
-                id = Long.parseLong(ctx.pathParam("id"));
-            } catch (NumberFormatException e) {
-                ctx.status(HttpStatus.BAD_REQUEST).json(new ErrorResponse("id must be a number"));
-                return;
+                ctx.json(new SearchResponse(recentObjectSearcher.searchRecentObjects(query.trim())));
+            } catch (IOException e) {
+                logger.error("MET search request failed", e);
+                ctx.status(HttpStatus.BAD_GATEWAY).json(new ErrorResponse("MET search request failed"));
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                logger.error("MET search request was interrupted", e);
+                ctx.status(HttpStatus.BAD_GATEWAY).json(new ErrorResponse("MET search request was interrupted"));
             }
-            Item item = items.get(id);
-            if (item == null) {
-                ctx.status(HttpStatus.NOT_FOUND).json(new ErrorResponse("item not found"));
-                return;
-            }
-            ctx.json(item);
         });
 
         return app;
